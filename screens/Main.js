@@ -1,54 +1,90 @@
-import React, { Component } from 'react';
-import { useEffect, useState } from 'react';
-import { SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { Component, useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 import {
-  Text,
+  SafeAreaView,
+  TouchableOpacity,
   StyleSheet,
   View,
   ActivityIndicator,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import { color } from 'react-native-reanimated';
-import { Button, Block } from '../components';
+import { Block, Text, Card, Badge } from '../components';
+import { theme, mocks } from '../constants';
 
-export default function Main(props) {
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+const { width } = Dimensions.get('window');
+const categoriess = [
+  {
+    id: 'Téléphone/Internet',
+    name: 'Téléphone/Internet',
+    icon: 'phone',
+    image: require('../assets/icon.png'),
+  },
+  {
+    id: 'Eau/electricité',
+    name: 'Eau/electricité',
+    icon: 'bolt',
+    image: require('../assets/icon.png'),
+  },
+  {
+    id: 'Transport',
+    name: 'Transport',
+    icon: 'bus',
+    image: require('../assets/icon.png'),
+  },
+];
 
-  useEffect(() => {
-    fetch('https://reactnative.dev/movies.json')
-      .then((response) => response.json())
-      .then((json) => setData(json.movies))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
-
-  return {
-    /* <SafeAreaView style={styles.container}>
-      <Block padding={[0, 25 * 1.2]}>
-        <Text>haha</Text>
-      </Block>
-      {isLoading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={data}
-          keyExtractor={({ id }, index) => id}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.loginBtn} onPress={() => {}}>
-              <Text style={{ color: 'white' }}>
-                {item.title}, {item.releaseYear}
-              </Text>
+export default class Main extends Component {
+  render() {
+    return (
+      <Block>
+        <Block flex={false} row center space="between" style={styles.header}>
+          <Text h1 bold>
+            Main
+          </Text>
+          <Ionicons name="ios-settings-sharp" size={26} color="black" />
+        </Block>
+        <Block flex={false} row center space="between" style={styles.header}>
+          <Text h2 bold style={{ color: '#ACACAC' }}>
+            Créanciers
+          </Text>
+        </Block>
+        <Block flex={false} row space="between" style={styles.categories}>
+          {categoriess.map((category) => (
+            <TouchableOpacity
+              key={category.name}
+              onPress={() => navigation.navigate('Explore', { category })}
+            >
+              <Card center middle shadow style={styles.category}>
+                <Badge
+                  margin={[0, 0, 15]}
+                  size={50}
+                  color="rgba(41,216,143,0.20)"
+                ></Badge>
+                <FontAwesome name={category.icon} size={24} color="black" />
+                <Text medium height={20}>
+                  {category.name}
+                </Text>
+                <Text gray caption>
+                  Text
+                </Text>
+              </Card>
             </TouchableOpacity>
-          )}
-        />
-      )}
-    </SafeAreaView> */
-  };
+          ))}
+        </Block>
+      </Block>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: theme.sizes.base * 2,
+    paddingTop: theme.sizes.base * 2,
+  },
   container: {
     paddingTop: 200,
     flex: 1,
@@ -109,5 +145,17 @@ const styles = StyleSheet.create({
   },
   signupText: {
     color: '#000180',
+  },
+  categories: {
+    flexWrap: 'wrap',
+    paddingHorizontal: theme.sizes.base * 2,
+    marginBottom: theme.sizes.base * 3.5,
+    paddingTop: theme.sizes.base * 2,
+  },
+  category: {
+    // this should be dynamic based on screen width
+    minWidth: (width - theme.sizes.padding * 2.4 - theme.sizes.base) / 2,
+    maxWidth: (width - theme.sizes.padding * 2.4 - theme.sizes.base) / 2,
+    maxHeight: (width - theme.sizes.padding * 2.4 - theme.sizes.base) / 2,
   },
 });
