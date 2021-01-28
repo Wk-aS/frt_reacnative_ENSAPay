@@ -1,7 +1,9 @@
 import React, { Component, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
-
+import { TextInput } from 'react-native-paper';
+import { Dropdown } from 'react-native-material-dropdown-v2-fixed';
+import { Button } from 'react-native-paper';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {
   SafeAreaView,
   TouchableOpacity,
@@ -11,43 +13,61 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { color } from 'react-native-reanimated';
 import { Block, Text, Card, Badge } from '../components';
 import { theme, mocks } from '../constants';
+import { ThemeProvider } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
-const categoriess = [
-  {
-    id: 'Téléphone/Internet',
-    name: 'Téléphone/Internet',
-    icon: 'phone',
-    nav: 'Telephone_form',
-    image: require('../assets/icon.png'),
-  },
-  {
-    id: 'Eau/electricité',
-    name: 'Eau/electricité',
-    icon: 'bolt',
-    nav: 'Eau_form',
-    image: require('../assets/icon.png'),
-  },
-  {
-    id: 'Transport',
-    name: 'Transport',
-    icon: 'bus',
-    nav: 'Transport_form',
-    image: require('../assets/icon.png'),
-  },
-];
 
-export default class Main extends Component {
+export default class Transport_form extends Component {
+  state = {
+    text: '',
+    date: new Date(),
+    mode: 'date',
+    show: false,
+  };
+
   render() {
+    const onChange = (event, selectedDate) => {
+      console.log('test');
+      const currentDate = selectedDate || this.state.date;
+      this.setState({ show: Platform.OS === 'ios' });
+      this.setState({ date: currentDate });
+    };
+
+    const showMode = (currentMode) => {
+      this.setState({ show: true });
+      this.setState({ mode: currentMode });
+    };
+
+    const showDatepicker = () => {
+      showMode('date');
+    };
+
+    const showTimepicker = () => {
+      showMode('time');
+    };
+
+    let data = [
+      {
+        value: 'value1',
+      },
+      {
+        value: 'value2',
+      },
+      {
+        value: 'value3',
+      },
+    ];
     return (
       <Block>
         <Block flex={false} row center space="between" style={styles.header}>
           <Text h1 bold>
-            Payer une facture
+            Transport
           </Text>
+
           <TouchableOpacity
             key="Transport_form"
             onPress={() => {
@@ -68,34 +88,62 @@ export default class Main extends Component {
           }}
         >
           <Text h2 bold style={{ color: '#ACACAC' }}>
-            Créanciers
+            Transport
           </Text>
         </Block>
-        <Block flex={false} row space="between" style={styles.categories}>
-          {categoriess.map((category) => (
-            <TouchableOpacity
-              key={category.nav}
-              onPress={() => {
-                const { navigation } = this.props;
-                this.props.navigation.navigate(category.nav);
-              }}
-            >
-              <Card center middle shadow style={styles.category}>
-                <Badge
-                  margin={[0, 0, 15]}
-                  size={1}
-                  color="rgba(41,216,143,0.20)"
-                ></Badge>
-                <FontAwesome name={category.icon} size={24} color="black" />
-                <Text medium height={20}>
-                  {category.name}
-                </Text>
-                <Text gray caption>
-                  Text
-                </Text>
-              </Card>
-            </TouchableOpacity>
-          ))}
+        <Block style={{ paddingHorizontal: 30 }}>
+          <Dropdown
+            selectedItemColor={theme.colors.secondary}
+            label="Gare de départ"
+            data={data}
+          />
+          <Dropdown
+            selectedItemColor={theme.colors.secondary}
+            label="Gare d'arrivé"
+            data={data}
+          />
+
+          <View style={{ paddingVertical: 15 }}>
+            <TextInput
+              value={this.state.date.toISOString().substring(0, 10)}
+              editable={false}
+              showSoftInputOnFocus={false}
+              right={
+                <TextInput.Icon
+                  name={() => (
+                    <FontAwesome
+                      name="calendar"
+                      size={24}
+                      color={theme.colors.secondary}
+                    />
+                  )}
+                  onPress={() => {
+                    showDatepicker();
+                  }}
+                />
+              }
+            ></TextInput>
+          </View>
+          {this.state.show && (
+            <RNDateTimePicker
+              testID="dateTimePicker"
+              value={this.state.date}
+              mode={this.state.mode}
+              is24Hour={true}
+              display="default"
+              onChange={onChange}
+            />
+          )}
+
+          <Button
+            icon="check"
+            style={{ height: 40 }}
+            color={theme.colors.primary}
+            mode="contained"
+            onPress={() => console.log(this.state.date)}
+          >
+            Valider les choix
+          </Button>
         </Block>
       </Block>
     );

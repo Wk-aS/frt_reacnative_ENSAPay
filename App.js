@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppLoading from 'expo-app-loading';
+//import AppLoading from 'expo-app-loading';
 import {
   StyleSheet,
   Text,
@@ -34,7 +34,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+    /*  if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
         <AppLoading
           startAsync={this.handleResourcesAsync}
@@ -42,7 +42,7 @@ export default class App extends React.Component {
           onFinish={() => this.setState({ isLoadingComplete: true })}
         />
       );
-    }
+    } */
     return (
       <NavigationContainer>
         <MyStack />
