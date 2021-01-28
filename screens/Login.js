@@ -7,8 +7,15 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Button, Block } from '../components';
+import  ajax  from '../ajax-requests/ajax';
 
 export default class Login extends Component {
+  async componentDidMount() {
+    const deals = await ajax.fetchInitialProviders();
+    console.log(deals);
+  }
+
+
   state = {
     Phone: '',
     password: '',
