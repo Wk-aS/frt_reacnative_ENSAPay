@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppLoading from 'expo-app-loading';
+//import AppLoading from 'expo-app-loading';
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,7 @@ import MyStack from './navigation';
 import * as constants from './constants';
 import { Block } from './components';
 import { log } from 'react-native-reanimated';
+import Login from "./screens/Login";
 
 const images = [
   require('./assets/adaptive-icon.png'),
@@ -20,6 +21,26 @@ const images = [
   require('./assets/splash.png'),
 ];
 export default class App extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      jwt: '',
+      loading: true
+    }
+    
+    this.newJWT = this.newJWT.bind(this);
+  }
+
+  newJWT(jwt){
+    this.setState({
+      jwt: jwt
+    });
+  } 
+
+
+
+
   state = {
     Phone: '',
     password: '',
@@ -34,7 +55,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+    /*  if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
         <AppLoading
           startAsync={this.handleResourcesAsync}
@@ -42,7 +63,16 @@ export default class App extends React.Component {
           onFinish={() => this.setState({ isLoadingComplete: true })}
         />
       );
+    } */
+
+
+    if (!this.state.jwt) {
+      return (
+        <Login newJWT={this.newJWT}/>
+      );
     }
+
+
     return (
       <NavigationContainer>
         <MyStack />

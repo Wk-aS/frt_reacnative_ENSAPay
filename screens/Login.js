@@ -6,13 +6,44 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+
 import { Button, Block } from '../components';
-import  ajax  from '../ajax-requests/ajax';
+import axios from "axios";
+import deviceStorage from "../services/deviceStorage";
 
 export default class Login extends Component {
-  async componentDidMount() {
-    const deals = await ajax.fetchInitialProviders();
-    console.log(deals);
+  
+  constructor(props){
+    super(props);
+    this.state = {
+      Phone: '',
+      password: '',
+      error: '',
+      loading: false
+    };
+
+    this.loginUser = this.loginUser.bind(this);
+  }
+
+  loginUser() {
+    const { Phone, password } = this.state;
+
+    this.setState({ error: '', loading: true });
+
+    // NOTE Post to HTTPS only in production
+    axios.post("http://localhost:8081/login",{
+      userName: Phone,
+      password: password
+    })
+    .then((response) => {
+      deviceStorage.saveKey("id_token", response.data.jwt);
+      this.props.newJWT(response.data.jwt);
+      this.props.navigation.navigate('Main');
+      this.state.loginSuccess=true;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
 
@@ -20,6 +51,7 @@ export default class Login extends Component {
     Phone: '',
     password: '',
     isLoadingComplete: false,
+    loginSuccess:false,
   };
   render() {
     return (
@@ -29,18 +61,20 @@ export default class Login extends Component {
           <TextInput
             keyboardType={'numeric'}
             style={styles.inputText}
+            value={this.state.Phone}
             placeholder="Phone..."
             placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ Phone: text })}
+            onChangeText={text => this.setState({ Phone: text })}
           />
         </View>
         <View style={styles.inputView}>
           <TextInput
             secureTextEntry
             style={styles.inputText}
+            value={this.state.password}
             placeholder="Password..."
             placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ password: text })}
+            onChangeText={text => this.setState({ password: text })}
           />
         </View>
         <TouchableOpacity>
@@ -49,7 +83,7 @@ export default class Login extends Component {
         <TouchableOpacity
           style={styles.loginBtn}
           onPress={() => {
-            this.props.navigation.navigate('Main');
+            this.loginUser()
           }}
         >
           <Text style={styles.loginText}>Login</Text>
