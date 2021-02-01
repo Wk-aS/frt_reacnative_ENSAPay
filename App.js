@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import Navigator from "./routes/HomeStack";
+
 //import AppLoading from 'expo-app-loading';
 import {
   StyleSheet,
@@ -13,6 +14,7 @@ import * as constants from './constants';
 import { Block } from './components';
 import { log } from 'react-native-reanimated';
 import Login from "./screens/Login";
+import Main from "./screens/Main";
 
 const images = [
   require('./assets/adaptive-icon.png'),
@@ -20,6 +22,7 @@ const images = [
   require('./assets/icon.png'),
   require('./assets/splash.png'),
 ];
+
 export default class App extends React.Component {
 
   constructor() {
@@ -64,20 +67,8 @@ export default class App extends React.Component {
         />
       );
     } */
-
-
-    if (!this.state.jwt) {
       return (
-        <Login newJWT={this.newJWT}/>
+        <Navigator />
       );
-    }
-
-
-    return (
-      <NavigationContainer>
-        <MyStack />
-      </NavigationContainer>
-      /*     */
-    );
   }
 }

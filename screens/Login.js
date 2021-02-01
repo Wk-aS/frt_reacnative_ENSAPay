@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,53 +7,39 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { Button, Block } from '../components';
 import axios from "axios";
-import deviceStorage from "../services/deviceStorage";
 
-export default class Login extends Component {
-  
-  constructor(props){
-    super(props);
-    this.state = {
-      Phone: '',
-      password: '',
-      error: '',
-      loading: false
-    };
+export default function Login(props) {
 
-    this.loginUser = this.loginUser.bind(this);
-  }
+    console.log("props\n\n", props)
+    const { navigation } = props
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [success, setSuccess] = useState("");
+    console.log(success);
 
-  loginUser() {
-    const { Phone, password } = this.state;
-
-    this.setState({ error: '', loading: true });
-
+    const loginUser = () => {
     // NOTE Post to HTTPS only in production
-    axios.post("http://localhost:8081/login",{
-      userName: Phone,
+    axios.post("http://192.168.1.104:8081/login",{
+      userName: phone,
       password: password
     })
     .then((response) => {
-      deviceStorage.saveKey("id_token", response.data.jwt);
-      this.props.newJWT(response.data.jwt);
-      this.props.navigation.navigate('Main');
-      this.state.loginSuccess=true;
+      //deviceStorage.saveKey("id_token", response.data.jwt);
+      setSuccess(true)
     })
     .catch((error) => {
       console.log(error);
     });
-  }
+    }
 
+    useEffect( 
+      () => {
+      if(success) {
+        navigation.navigate('Main');
+      }
+    }, [success, navigation]);
 
-  state = {
-    Phone: '',
-    password: '',
-    isLoadingComplete: false,
-    loginSuccess:false,
-  };
-  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.logo}>ENSAPay</Text>
@@ -61,20 +47,20 @@ export default class Login extends Component {
           <TextInput
             keyboardType={'numeric'}
             style={styles.inputText}
-            value={this.state.Phone}
-            placeholder="Phone..."
+            value={phone}
+            placeholder="phone..."
             placeholderTextColor="#003f5c"
-            onChangeText={text => this.setState({ Phone: text })}
+            onChangeText={v => setPhone(v)}
           />
         </View>
         <View style={styles.inputView}>
           <TextInput
             secureTextEntry
             style={styles.inputText}
-            value={this.state.password}
+            value={password}
             placeholder="Password..."
             placeholderTextColor="#003f5c"
-            onChangeText={text => this.setState({ password: text })}
+            onChangeText={v => setPassword(v)}
           />
         </View>
         <TouchableOpacity>
@@ -82,9 +68,7 @@ export default class Login extends Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginBtn}
-          onPress={() => {
-            this.loginUser()
-          }}
+          onPress={loginUser}
         >
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
@@ -93,8 +77,7 @@ export default class Login extends Component {
         </TouchableOpacity>
       </View>
     );
-  }
-}
+};
 
 const styles = StyleSheet.create({
   container: {
